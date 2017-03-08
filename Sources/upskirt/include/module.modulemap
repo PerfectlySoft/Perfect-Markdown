@@ -1,0 +1,5 @@
+module upskirt [system] {
+  header "upskirt.h"
+  link "upskirt"
+  export *
+}
