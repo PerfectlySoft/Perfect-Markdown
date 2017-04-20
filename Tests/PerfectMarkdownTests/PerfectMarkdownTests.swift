@@ -2,19 +2,58 @@ import XCTest
 @testable import PerfectMarkdown
 
 class PerfectMarkdownTests: XCTestCase {
-    func testExample() {
-      let markdown = "# Swift调用C语言自建函数库的方法\n\n本程序示范了如何用Swift调用自定义C语言模块的方法。您可以直接下载本程序，或者按照以下教程逐步完成。\n\n## 快速上手\n\n本程序需要Swift 3.0以上版本。\n\n### 下载、编译和测试\n\n```\n$ git clone https://github.com/RockfordWei/CSwift.git\n$ cd CSwift\n$ swift build\n$ swift test\n```\n\n### Module Map\n\n下一步是修理一下目标的模块映射表。请把module.modulemap修改为如下程序：\n\n``` swift\nmodule CSwift [system] {\n\theader \"CSwift.h\"\n\tlink \"CSwift\"\n\texport *\n}\n```\n\n## 其他\n\nNumber|Name|Date\n------|----|----\n1|CSwift|Mar 7, 2017\n2|SunDown文本处理器|2017年3月7日\n\n"
-      guard let html = markdown.markdownToHTML else {
-        XCTFail("fault")
-        return
-      }//end guard
-      print(html)
-    }
-
+  func testTitle () {
+    XCTAssertEqual(
+      "# 标题1\n## 标题2\n### 标题3\n".markdownToHTML ?? "",
+      "<h1>标题1</h1>\n\n<h2>标题2</h2>\n\n<h3>标题3</h3>\n\n<p>"
+    )
+  }
+  func testList () {
+    XCTAssertEqual(
+      "- 列表1\n- 列表2\n- 列表3\n\n".markdownToHTML ?? "",
+      "<ul>\n<li>列表1</li>\n<li>列表2</li>\n<li>列表3</li>\n</ul>\n\n<p>"
+    )
+  }
+  func testNumbers () {
+    XCTAssertEqual(
+      "1. 清单1\n2. 清单2\n3. 清单3\n\n".markdownToHTML ?? "",
+      "<ol>\n<li value=1>清单1</li>\n<li value=2>清单2</li>\n<li value=3>清单3</li>\n</ol>\n\n<p>"
+    )
+  }
+  func testInlineCode () {
+    XCTAssertEqual(
+      "`let x = \"🇨🇳🇨🇦\"`\n".markdownToHTML ?? "",
+      "<p><code>let x = &quot;🇨🇳🇨🇦&quot;</code>\n"
+    )
+  }
+  func testCodes () {
+    XCTAssertEqual(
+      "```\nlet x = \"🇨🇳🇨🇦\"\nlet y = 100\n```\n".markdownToHTML ?? "",
+      "<pre><code>let x = &quot;🇨🇳🇨🇦&quot;\nlet y = 100\n</code></pre>\n\n<p>"
+    )
+  }
+  func testLink () {
+    XCTAssertEqual(
+      "[Perfect 官网](http://www.perfect.org)\n".markdownToHTML ?? "",
+      "<p><a href=\"http://www.perfect.org\">Perfect 官网</a>\n"
+    )
+  }
+  func testTable() {
+      let a = "Number|Name|Date\n------|----|----\n1|CSwift|Mar 7, 2017\n2|SunDown文本处理器|2017年3月7日\n\n".markdownToHTML ?? ""
+      let b = "<table><thead>\n<tr>\n<th>Number</th>\n<th>Name</th>\n<th>Date</th>\n</tr>\n</thead><tbody>\n<tr>\n<td>1</td>\n" +
+      "<td>CSwift</td>\n<td>Mar 7, 2017</td>\n</tr>\n<tr>\n<td>2</td>\n<td>SunDown文本处理器</td>\n<td>2017年3月7日</td>\n</tr>\n</tbody></table>\n\n<p>"
+      XCTAssertEqual( a, b)
+  }
 
     static var allTests : [(String, (PerfectMarkdownTests) -> () throws -> Void)] {
         return [
-            ("testExample", testExample),
+            ("testTitle", testTitle),
+            ("testList", testList),
+            ("testNumbers", testNumbers),
+            ("testInlineCode", testInlineCode),
+            ("testCodes", testCodes),
+            ("testLink", testLink),
+            ("testTable", testTable)
         ]
     }
 }
