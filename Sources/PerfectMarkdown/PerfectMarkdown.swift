@@ -49,7 +49,9 @@ extension String {
     let md = sd_markdown_new(enabled_extensions, 16, &callbacks, &options)
     let _ = sd_markdown_render(ob, ib.pointee.data, ib.pointee.size, md)
     let _ = sd_markdown_free(md)
-    let htm = String(cString: ob.pointee.data)
+    var buffer = Array(UnsafeBufferPointer(start: ob.pointee.data, count: ob.pointee.size))
+    buffer.append(0)
+    let htm = String(cString: buffer)
     let _ = sd_bufrelease(ib)
     let _ = sd_bufrelease(ob)
     return htm
