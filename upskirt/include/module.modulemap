@@ -1,7 +1,0 @@
-module sundown [system] {
-  header "markdown.h"
-  header "html.h"
-  header "buffer.h"
-  link "upskirt"
-  export *
-}
