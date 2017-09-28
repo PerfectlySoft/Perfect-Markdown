@@ -59,7 +59,13 @@ Perfect-Markdown 直接基于  [GerHobbelt 的 "upskirt（超短裙）"](https:/
 请首先修改您的 Package.swift 文件增加依存关系：
 
 ``` swift
-.Package(url: "https://github.com/PerfectlySoft/Perfect-Markdown.git", majorVersion: 1)
+.package(url: "https://github.com/PerfectlySoft/Perfect-Markdown.git", 
+	from: "3.0.0")
+
+// on target section:
+.target(
+            // name: "your project name",
+            dependencies: ["PerfectMarkdown"]),
 ```
 
 ## 引用库函数
