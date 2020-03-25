@@ -2,6 +2,11 @@ import XCTest
 @testable import PerfectMarkdown
 
 class PerfectMarkdownTests: XCTestCase {
+
+  override static func setUp() {
+    markdownExtensionOptions = MarkdownExtensionOptions.default
+  }
+
   func testTitle () {
     XCTAssertEqual(
       "# 标题1\n## 标题2\n### 标题3\n".markdownToHTML ?? "",
@@ -45,15 +50,4 @@ class PerfectMarkdownTests: XCTestCase {
       XCTAssertEqual( a, b)
   }
 
-    static var allTests : [(String, (PerfectMarkdownTests) -> () throws -> Void)] {
-        return [
-            ("testTitle", testTitle),
-            ("testList", testList),
-            ("testNumbers", testNumbers),
-            ("testInlineCode", testInlineCode),
-            ("testCodes", testCodes),
-            ("testLink", testLink),
-            ("testTable", testTable)
-        ]
-    }
 }
