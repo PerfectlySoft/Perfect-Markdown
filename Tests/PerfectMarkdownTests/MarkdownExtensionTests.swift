@@ -11,17 +11,13 @@ class MarkdownExtensionTests: XCTestCase {
     withoutOptionString: String
   ) {
 
-    markdownExtensionOptions = option
-
     XCTAssertEqual(
-      markdownString.markdownToHTML ?? "",
+      markdownString.renderMarkdown(markdownExtensions: option) ?? "",
       withOptionString + "\n"
     )
 
-    markdownExtensionOptions = withoutOptions
-
     XCTAssertEqual(
-      markdownString.markdownToHTML ?? "",
+      markdownString.renderMarkdown(markdownExtensions: withoutOptions) ?? "",
       withoutOptionString + "\n"
     )
   }

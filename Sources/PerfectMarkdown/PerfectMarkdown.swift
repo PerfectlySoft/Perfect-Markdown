@@ -24,11 +24,27 @@ import Darwin
 #endif
 import upskirt
 
+/// an OptionSet setting the markdown extensions to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
 public var markdownExtensionOptions = MarkdownExtensionOptions.default
+
+/// an OptionSet setting the HTML rendering options to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
 public var markdownHTMLRenderOptions = HTMLRenderOptions.default
 
-private extension String {
-  func renderMarkdown(renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions) -> String? {
+extension String {
+  /// parse a Markdown string into an HTML one, return nil if failed
+  public var markdownToHTML: String? {
+    renderMarkdown()
+  }
+
+  /// parse a Markdown string into an XHTML one, return nil if failed
+  public var markdownToXHTML: String? {
+    renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
+  }
+
+  public func renderMarkdown(
+    markdownExtensions: MarkdownExtensionOptions = markdownExtensionOptions,
+    renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions
+  ) -> String? {
     let OUTPUT_UNIT = 64
     let size = utf8.count
     guard let ib = sd_bufnew(size) else {
@@ -45,7 +61,7 @@ private extension String {
     var callbacks = sd_callbacks()
     var options = html_renderopt()
     let _ = sdhtml_renderer(&callbacks, &options, renderOptions.rawValue)
-    let md = sd_markdown_new(markdownExtensionOptions.rawValue, 16, &callbacks, &options)
+    let md = sd_markdown_new(markdownExtensions.rawValue, 16, &callbacks, &options)
     let _ = sd_markdown_render(ob, ib.pointee.data, ib.pointee.size, md)
     let _ = sd_markdown_free(md)
     var buffer = Array(UnsafeBufferPointer(start: ob.pointee.data, count: ob.pointee.size))
@@ -54,17 +70,5 @@ private extension String {
     let _ = sd_bufrelease(ib)
     let _ = sd_bufrelease(ob)
     return htm
-  }
-}
-
-extension String {
-  /// parse a Markdown string into an HTML one, return nil if failed
-  public var markdownToHTML: String? {
-    renderMarkdown()
-  }
-
-  /// parse a Markdown string into an XHTML one, return nil if failed
-  public var markdownToXHTML: String? {
-    renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
   }
 }

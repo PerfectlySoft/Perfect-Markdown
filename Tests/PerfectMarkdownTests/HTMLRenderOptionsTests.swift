@@ -14,14 +14,14 @@ class HTMLRenderOptionsTests: XCTestCase {
     markdownHTMLRenderOptions = option
 
     XCTAssertEqual(
-      markdownString.markdownToHTML ?? "",
+      markdownString.renderMarkdown(renderOptions: option) ?? "",
       withOptionString + "\n"
     )
 
     markdownHTMLRenderOptions = withoutOptions
 
     XCTAssertEqual(
-      markdownString.markdownToHTML ?? "",
+      markdownString.renderMarkdown(renderOptions: withoutOptions) ?? "",
       withoutOptionString + "\n"
     )
   }
