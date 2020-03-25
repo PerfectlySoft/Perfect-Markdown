@@ -30,19 +30,19 @@ public var markdownExtensionOptions = MarkdownExtensionOptions.default
 /// an OptionSet setting the HTML rendering options to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
 public var markdownHTMLRenderOptions = HTMLRenderOptions.default
 
-extension String {
+public extension String {
   /// parse a Markdown string into an HTML one, return nil if failed
-  public var markdownToHTML: String? {
+  var markdownToHTML: String? {
     renderMarkdown()
   }
 
   /// parse a Markdown string into an XHTML one, return nil if failed
-  public var markdownToXHTML: String? {
+  var markdownToXHTML: String? {
     renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
   }
 
   /// renders a Markdown string using `markdownExtensions` and `renderOptions`
-  public func renderMarkdown(
+  func renderMarkdown(
     markdownExtensions: MarkdownExtensionOptions = markdownExtensionOptions,
     renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions
   ) -> String? {
