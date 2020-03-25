@@ -50,4 +50,10 @@ class PerfectMarkdownTests: XCTestCase {
       XCTAssertEqual( a, b)
   }
 
+  func testXHTMLRendering() {
+    XCTAssertEqual(
+      "# Header\n----".markdownToXHTML ?? "",
+      "<h1>Header</h1>\n\n<hr/>\n"
+    )
+  }
 }

@@ -27,17 +27,15 @@ import upskirt
 public var markdownExtensionOptions = MarkdownExtensionOptions.default
 public var markdownHTMLRenderOptions = HTMLRenderOptions.default
 
-extension String {
-  /// parse a Markdown string into an HTML one, return nil if failed
-  public var markdownToHTML: String? { get {
-    let terminated = self
+private extension String {
+  func renderMarkdown(renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions) -> String? {
     let OUTPUT_UNIT = 64
-    let size = terminated.utf8.count
+    let size = utf8.count
     guard let ib = sd_bufnew(size) else {
       return nil
     }//end guard
     let _ = sd_bufgrow(ib, size)
-    ib.pointee.size = terminated.withCString { ptr->Int in
+    ib.pointee.size = withCString { ptr->Int in
       memcpy(ib.pointee.data, ptr, size)
       return size
     }//end markdown
@@ -46,7 +44,7 @@ extension String {
     }//end guard
     var callbacks = sd_callbacks()
     var options = html_renderopt()
-    let _ = sdhtml_renderer(&callbacks, &options, markdownHTMLRenderOptions.rawValue)
+    let _ = sdhtml_renderer(&callbacks, &options, renderOptions.rawValue)
     let md = sd_markdown_new(markdownExtensionOptions.rawValue, 16, &callbacks, &options)
     let _ = sd_markdown_render(ob, ib.pointee.data, ib.pointee.size, md)
     let _ = sd_markdown_free(md)
@@ -56,5 +54,17 @@ extension String {
     let _ = sd_bufrelease(ib)
     let _ = sd_bufrelease(ob)
     return htm
-  } }
+  }
+}
+
+extension String {
+  /// parse a Markdown string into an HTML one, return nil if failed
+  public var markdownToHTML: String? {
+    renderMarkdown()
+  }
+
+  /// parse a Markdown string into an XHTML one, return nil if failed
+  public var markdownToXHTML: String? {
+    renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
+  }
 }
