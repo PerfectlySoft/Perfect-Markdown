@@ -17,11 +17,6 @@
 //===----------------------------------------------------------------------===//
 //
 
-#if os(Linux)
-import Glibc
-#else
-import Darwin
-#endif
 import upskirt
 
 /// an OptionSet setting the markdown extensions to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
