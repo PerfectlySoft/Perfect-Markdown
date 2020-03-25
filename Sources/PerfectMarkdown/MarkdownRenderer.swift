@@ -1,7 +1,52 @@
 import upskirt
 
 public class MarkdownRenderer {
-  let outputBufferReallocationUnit: Int
+  typealias InputBuffer = IOBuffer
+  typealias OutputBuffer = IOBuffer
+
+  class IOBuffer {
+    let buffer: UnsafeMutablePointer<sd_buf>
+
+    init?(unitSize: Int) {
+      guard
+        let bufferPointer = sd_bufnew(unitSize)
+      else {
+        return nil
+      }
+
+      self.buffer = bufferPointer
+    }
+
+    init?(input: String) {
+      let bufferSize = input.utf8.count
+      guard
+        let bufferPointer = sd_bufnew(bufferSize)
+      else {
+        return nil
+      }
+
+      self.buffer = bufferPointer
+      sd_bufgrow(buffer, bufferSize)
+
+      buffer.pointee.size = input.withCString { ptr->Int in
+        memcpy(buffer.pointee.data, ptr, bufferSize)
+        return bufferSize
+      }
+    }
+
+    deinit {
+      sd_bufrelease(buffer)
+    }
+
+    var value: String {
+      var stringBuffer = Array(UnsafeBufferPointer(start: buffer.pointee.data, count: buffer.pointee.size))
+      stringBuffer.append(0)
+
+      return String(cString: stringBuffer)
+    }
+  }
+
+  let outputBufferUnitSize: Int
 
   let markdownExtensions: MarkdownExtensionOptions
   let renderOptions: HTMLRenderOptions
@@ -12,11 +57,11 @@ public class MarkdownRenderer {
   let markdownContext: OpaquePointer?
 
   init(
-    outputBufferReallocationUnit: Int = 64,
+    outputBufferUnitSize: Int = 64,
     markdownExtensions: MarkdownExtensionOptions = MarkdownExtensionOptions.default,
     renderOptions: HTMLRenderOptions = HTMLRenderOptions.default
   ) {
-    self.outputBufferReallocationUnit = outputBufferReallocationUnit
+    self.outputBufferUnitSize = outputBufferUnitSize
 
     self.markdownExtensions = markdownExtensions
     self.renderOptions = renderOptions
@@ -29,33 +74,20 @@ public class MarkdownRenderer {
     sd_markdown_free(markdownContext)
   }
 
-  func callAsFunction(input: String) -> String? {
-    let inputBufferSize = input.utf8.count
-    guard let inputBuffer = sd_bufnew(inputBufferSize) else {
+  func render(inputBuffer: InputBuffer, outputBuffer: OutputBuffer) {
+    sd_markdown_render(outputBuffer.buffer, inputBuffer.buffer.pointee.data, inputBuffer.buffer.pointee.size, markdownContext)
+  }
+
+  public func callAsFunction(input: String) -> String? {
+    guard
+      let inputBuffer = InputBuffer(input: input),
+      let outputBuffer = OutputBuffer(unitSize: outputBufferUnitSize)
+    else {
       return nil
-    }//end guard
-    defer {
-      sd_bufrelease(inputBuffer)
     }
 
-    sd_bufgrow(inputBuffer, inputBufferSize)
-    inputBuffer.pointee.size = input.withCString { ptr->Int in
-      memcpy(inputBuffer.pointee.data, ptr, inputBufferSize)
-      return inputBufferSize
-    }//end markdown
+    render(inputBuffer: inputBuffer, outputBuffer: outputBuffer)
 
-    guard let outputBuffer = sd_bufnew(outputBufferReallocationUnit) else {
-      return nil
-    }//end guard
-    defer {
-      sd_bufrelease(outputBuffer)
-    }
-
-    sd_markdown_render(outputBuffer, inputBuffer.pointee.data, inputBuffer.pointee.size, markdownContext)
-
-    var stringBuffer = Array(UnsafeBufferPointer(start: outputBuffer.pointee.data, count: outputBuffer.pointee.size))
-    stringBuffer.append(0)
-
-    return String(cString: stringBuffer)
+    return outputBuffer.value
   }
 }
