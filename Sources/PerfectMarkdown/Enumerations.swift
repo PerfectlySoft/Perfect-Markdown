@@ -22,7 +22,7 @@ public extension MarkdownExtensionOptions {
   static let superscript         = MarkdownExtensionOptions(MKDEXT_SUPERSCRIPT)
   static let laxSpacing          = MarkdownExtensionOptions(MKDEXT_LAX_SPACING)
   static let emailFriendly       = MarkdownExtensionOptions(MKDEXT_EMAIL_FRIENDLY)
-  // static let listAlphaRoman      = MarkdownExtensionOptions(MKDEXT_LIST_ALPHA_ROMAN) // broken in upskirt
+//static let listAlphaRoman      = MarkdownExtensionOptions(MKDEXT_LIST_ALPHA_ROMAN) // broken in upskirt
 
   static let none = MarkdownExtensionOptions([])
   static let `default` = MarkdownExtensionOptions([.tables, .fencedCode, .emailFriendly])
@@ -44,7 +44,7 @@ public extension HTMLRenderOptions {
   static let skipStyle       = HTMLRenderOptions(HTML_SKIP_STYLE)
   static let skipImages      = HTMLRenderOptions(HTML_SKIP_IMAGES)
   static let skipLinks       = HTMLRenderOptions(HTML_SKIP_LINKS)
-  // static let expandTabs      = HTMLRenderOptions(HTML_EXPAND_TABS) // broken in upskirt
+//static let expandTabs      = HTMLRenderOptions(HTML_EXPAND_TABS) // broken in upskirt
   static let safeLinks       = HTMLRenderOptions(HTML_SAFELINK)
   static let tableOfContents = HTMLRenderOptions(HTML_TOC)
   static let hardWrap        = HTMLRenderOptions(HTML_HARD_WRAP)
