@@ -27,7 +27,7 @@ import upskirt
 extension String {
   /// parse a Markdown string into an HTML one, return nil if failed
   public var markdownToHTML: String? { get {
-    let terminated = self + "\0"
+    let terminated = self
     let OUTPUT_UNIT = 64
     let size = terminated.utf8.count
     let enabled_extensions = MKDEXT_TABLES.rawValue | MKDEXT_FENCED_CODE.rawValue | MKDEXT_EMAIL_FRIENDLY.rawValue
