@@ -48,29 +48,38 @@ extension String {
     markdownExtensions: MarkdownExtensionOptions = markdownExtensionOptions,
     renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions
   ) -> String? {
-    let size = utf8.count
-    guard let ib = sd_bufnew(size) else {
+    let inputBufferSize = self.utf8.count
+    guard let inputBuffer = sd_bufnew(inputBufferSize) else {
       return nil
     }//end guard
-    let _ = sd_bufgrow(ib, size)
-    ib.pointee.size = withCString { ptr->Int in
-      memcpy(ib.pointee.data, ptr, size)
-      return size
+    defer {
+      sd_bufrelease(inputBuffer)
+    }
+
+    sd_bufgrow(inputBuffer, inputBufferSize)
+    inputBuffer.pointee.size = self.withCString { ptr->Int in
+      memcpy(inputBuffer.pointee.data, ptr, inputBufferSize)
+      return inputBufferSize
     }//end markdown
-    guard let ob = sd_bufnew(Self.outputBufferReallocationUnit) else {
+
+    guard let outputBuffer = sd_bufnew(Self.outputBufferReallocationUnit) else {
       return nil
     }//end guard
+    defer {
+      sd_bufrelease(outputBuffer)
+    }
+
     var callbacks = sd_callbacks()
     var options = html_renderopt()
-    let _ = sdhtml_renderer(&callbacks, &options, renderOptions.rawValue)
-    let md = sd_markdown_new(markdownExtensions.rawValue, 16, &callbacks, &options)
-    let _ = sd_markdown_render(ob, ib.pointee.data, ib.pointee.size, md)
-    let _ = sd_markdown_free(md)
-    var buffer = Array(UnsafeBufferPointer(start: ob.pointee.data, count: ob.pointee.size))
-    buffer.append(0)
-    let htm = String(cString: buffer)
-    let _ = sd_bufrelease(ib)
-    let _ = sd_bufrelease(ob)
-    return htm
+    sdhtml_renderer(&callbacks, &options, renderOptions.rawValue)
+
+    let markdownContext = sd_markdown_new(markdownExtensions.rawValue, 16, &callbacks, &options)
+    sd_markdown_render(outputBuffer, inputBuffer.pointee.data, inputBuffer.pointee.size, markdownContext)
+    sd_markdown_free(markdownContext)
+
+    var stringBuffer = Array(UnsafeBufferPointer(start: outputBuffer.pointee.data, count: outputBuffer.pointee.size))
+    stringBuffer.append(0)
+
+    return String(cString: stringBuffer)
   }
 }
