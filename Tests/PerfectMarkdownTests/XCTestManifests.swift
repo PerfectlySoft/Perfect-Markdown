@@ -49,6 +49,7 @@ extension PerfectMarkdownTests {
         ("testNumbers", testNumbers),
         ("testTable", testTable),
         ("testTitle", testTitle),
+        ("testXHTMLRendering", testXHTMLRendering),
     ]
 }
 
