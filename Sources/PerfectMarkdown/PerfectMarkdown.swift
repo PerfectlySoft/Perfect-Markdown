@@ -41,45 +41,14 @@ extension String {
     renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
   }
 
-  /// the smallest number of bytes to expand the output buffer by at a time
-  private static let outputBufferReallocationUnit = 64
-
+  /// renders a Markdown string using `markdownExtensions` and `renderOptions`
   public func renderMarkdown(
     markdownExtensions: MarkdownExtensionOptions = markdownExtensionOptions,
     renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions
   ) -> String? {
-    let inputBufferSize = self.utf8.count
-    guard let inputBuffer = sd_bufnew(inputBufferSize) else {
-      return nil
-    }//end guard
-    defer {
-      sd_bufrelease(inputBuffer)
-    }
-
-    sd_bufgrow(inputBuffer, inputBufferSize)
-    inputBuffer.pointee.size = self.withCString { ptr->Int in
-      memcpy(inputBuffer.pointee.data, ptr, inputBufferSize)
-      return inputBufferSize
-    }//end markdown
-
-    guard let outputBuffer = sd_bufnew(Self.outputBufferReallocationUnit) else {
-      return nil
-    }//end guard
-    defer {
-      sd_bufrelease(outputBuffer)
-    }
-
-    var callbacks = sd_callbacks()
-    var options = html_renderopt()
-    sdhtml_renderer(&callbacks, &options, renderOptions.rawValue)
-
-    let markdownContext = sd_markdown_new(markdownExtensions.rawValue, 16, &callbacks, &options)
-    sd_markdown_render(outputBuffer, inputBuffer.pointee.data, inputBuffer.pointee.size, markdownContext)
-    sd_markdown_free(markdownContext)
-
-    var stringBuffer = Array(UnsafeBufferPointer(start: outputBuffer.pointee.data, count: outputBuffer.pointee.size))
-    stringBuffer.append(0)
-
-    return String(cString: stringBuffer)
+    MarkdownRenderer(
+      markdownExtensions: markdownExtensions,
+      renderOptions: renderOptions
+    ).callAsFunction(input: self)
   }
 }
