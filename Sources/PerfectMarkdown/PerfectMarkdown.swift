@@ -41,11 +41,13 @@ extension String {
     renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
   }
 
+  /// the smallest number of bytes to expand the output buffer by at a time
+  private static let outputBufferReallocationUnit = 64
+
   public func renderMarkdown(
     markdownExtensions: MarkdownExtensionOptions = markdownExtensionOptions,
     renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions
   ) -> String? {
-    let OUTPUT_UNIT = 64
     let size = utf8.count
     guard let ib = sd_bufnew(size) else {
       return nil
@@ -55,7 +57,7 @@ extension String {
       memcpy(ib.pointee.data, ptr, size)
       return size
     }//end markdown
-    guard let ob = sd_bufnew(OUTPUT_UNIT) else {
+    guard let ob = sd_bufnew(Self.outputBufferReallocationUnit) else {
       return nil
     }//end guard
     var callbacks = sd_callbacks()
