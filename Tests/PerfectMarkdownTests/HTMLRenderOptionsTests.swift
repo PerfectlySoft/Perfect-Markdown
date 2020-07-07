@@ -1,6 +1,7 @@
 import XCTest
 import PerfectMarkdown
 
+#if swift(>=5.0)
 class HTMLRenderOptionsTests: XCTestCase {
 
   func assertWithOption(
@@ -117,3 +118,4 @@ class HTMLRenderOptionsTests: XCTestCase {
   }
 
 }
+#endif

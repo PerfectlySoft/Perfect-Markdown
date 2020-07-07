@@ -1,3 +1,4 @@
+#if swift(>=5.0)
 #if !canImport(ObjectiveC)
 import XCTest
 
@@ -60,4 +61,5 @@ public func __allTests() -> [XCTestCaseEntry] {
         testCase(PerfectMarkdownTests.__allTests__PerfectMarkdownTests),
     ]
 }
+#endif
 #endif

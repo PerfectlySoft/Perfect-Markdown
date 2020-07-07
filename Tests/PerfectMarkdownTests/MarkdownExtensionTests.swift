@@ -1,6 +1,7 @@
 import XCTest
 import PerfectMarkdown
 
+#if swift(>=5.0)
 class MarkdownExtensionTests: XCTestCase {
 
   func assertWithOption(
@@ -113,3 +114,4 @@ class MarkdownExtensionTests: XCTestCase {
   }
 
 }
+#endif
