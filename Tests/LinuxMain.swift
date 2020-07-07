@@ -1,6 +1,8 @@
 import XCTest
-@testable import PerfectMarkdownTests
 
-XCTMain([
-     testCase(PerfectMarkdownTests.allTests),
-])
+import PerfectMarkdownTests
+
+var tests = [XCTestCaseEntry]()
+tests += PerfectMarkdownTests.__allTests()
+
+XCTMain(tests)
