@@ -6,6 +6,8 @@ public class MarkdownRenderer {
   typealias OutputBuffer = IOBuffer
 
   class IOBuffer {
+    static let bufferUnitSize = 64
+
     let buffer: UnsafeMutablePointer<sd_buf>
 
     init?(unitSize: Int) {
@@ -21,7 +23,7 @@ public class MarkdownRenderer {
     init?(input: String) {
       let bufferSize = input.utf8.count
       guard
-        let bufferPointer = sd_bufnew(bufferSize)
+        let bufferPointer = sd_bufnew(Self.bufferUnitSize)
       else {
         return nil
       }
