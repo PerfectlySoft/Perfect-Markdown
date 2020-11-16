@@ -28,11 +28,35 @@
 import upskirt
 
 #if swift(>=5.0)
-/// an OptionSet setting the markdown extensions to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
-public var markdownExtensionOptions = MarkdownExtensionOptions.default
+@available(*, deprecated, message: "Use MarkdownRenderer.defaultExtensionOptions")
+public var markdownExtensionOptions: MarkdownExtensionOptions {
+  get {
+    MarkdownRenderer.defaultExtensionOptions
+  }
+  set (options) {
+    MarkdownRenderer.defaultExtensionOptions = options
+  }
+}
 
-/// an OptionSet setting the HTML rendering options to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
-public var markdownHTMLRenderOptions = HTMLRenderOptions.default
+@available(*, deprecated, message: "Use MarkdownRenderer.defaultHTMLRenderOptions")
+public var markdownHTMLRenderOptions: HTMLRenderOptions {
+  get {
+    MarkdownRenderer.defaultHTMLRenderOptions
+  }
+  set (options) {
+    MarkdownRenderer.defaultHTMLRenderOptions = options
+  }
+}
+
+public extension MarkdownRenderer {
+
+  /// an OptionSet setting the markdown extensions to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
+  static var defaultHTMLRenderOptions = HTMLRenderOptions.default
+
+  /// an OptionSet setting the HTML rendering options to use when rendering using `.markdownToHTML` or `.markdownToXHTML`
+  static var defaultExtensionOptions = MarkdownExtensionOptions.default
+
+}
 #endif
 
 public extension String {
@@ -76,15 +100,15 @@ public extension String {
 	#if swift(>=5.0)
   /// parse a Markdown string into an XHTML one, return nil if failed
   var markdownToXHTML: String? {
-    renderMarkdown(renderOptions: [markdownHTMLRenderOptions, .useXHTML])
+    renderMarkdown(renderOptions: [MarkdownRenderer.defaultHTMLRenderOptions, .useXHTML])
   }
 	#endif
 
 	#if swift(>=5.0)
   /// renders a Markdown string using `markdownExtensions` and `renderOptions`
   func renderMarkdown(
-    markdownExtensions: MarkdownExtensionOptions = markdownExtensionOptions,
-    renderOptions: HTMLRenderOptions = markdownHTMLRenderOptions
+    markdownExtensions: MarkdownExtensionOptions = MarkdownRenderer.defaultExtensionOptions,
+    renderOptions: HTMLRenderOptions = MarkdownRenderer.defaultHTMLRenderOptions
   ) -> String? {
     MarkdownRenderer(
       markdownExtensions: markdownExtensions,

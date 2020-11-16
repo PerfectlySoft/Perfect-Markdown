@@ -5,7 +5,7 @@ class PerfectMarkdownTests: XCTestCase {
 
   override static func setUp() {
 		#if swift(>=5.0)
-    markdownExtensionOptions = MarkdownExtensionOptions.default
+    MarkdownRenderer.defaultExtensionOptions = MarkdownExtensionOptions.default
 		#endif
   }
 
